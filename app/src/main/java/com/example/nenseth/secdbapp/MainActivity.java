@@ -9,7 +9,17 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.nxp.nfclib.NxpNfcLib;
+
 public class MainActivity extends AppCompatActivity {
+
+    private String m_strKey = "05176190715f78ba80d0beebaf09daa3";
+    private NxpNfcLib m_libInstance = null;
+
+    private void initializeLibrary() {
+        m_libInstance = NxpNfcLib.getInstance();
+        m_libInstance.registerActivity(this, m_strKey);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

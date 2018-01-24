@@ -16,6 +16,18 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    repositories{
+        flatDir{
+            dirs 'libs'
+        }
+        maven{
+            credentials{
+                username "sdkuser"
+                password "taplinx"
+            }
+            url "http://maven.taplinx.nxp.com/nexus/content/repositories/taplinx/"
+        }
+    }
 }
 
 dependencies {
@@ -30,4 +42,5 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    compile('taplinx-android:nxpnfcandroidlib:1.4@aar') { transitive = true }
 }
