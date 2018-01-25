@@ -1,18 +1,24 @@
 package com.example.nenseth.secdbapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.nxp.nfclib.CardType;
 import com.nxp.nfclib.NxpNfcLib;
+import com.nxp.nfclib.desfire.DESFireFactory;
+import com.nxp.nfclib.desfire.IDESFireEV1;
 
 public class MainActivity extends AppCompatActivity {
 
+    private String TAG = MainActivity.class.getSimpleName();
     private String m_strKey = "05176190715f78ba80d0beebaf09daa3";
     private NxpNfcLib m_libInstance = null;
 
@@ -37,7 +43,31 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        initializeLibrary();
 
+    }
+
+    @Override
+    public void onNewIntent(Intent intent) {
+        cardLogic(intent);
+        super.onNewIntent(intent);
+    }
+
+    private void cardLogic(Intent intent) {
+        CardType cardType = m_libInstance.getCardType(intent);
+        Log.d(TAG, "cardLogic: cardtype found :" + cardType.getTagName());
+
+        if (CardType.DESFireEV1 == cardType) {
+            IDESFireEV1 objDESFireEV1 = DESFireFactory.getInstance().getDESFire(m_libInstance.getCustomModules());
+            try
+            {
+                objDESFireEV1.getReader().connect();
+            }
+            catch (Throwable t)
+            {
+                t.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -60,5 +90,17 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        m_libInstance.startForeGroundDispatch();
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        m_libInstance.stopForeGroundDispatch();
+        super.onPause();
     }
 }
